@@ -12,7 +12,7 @@ A real-time DPS meter for **Throne and Liberty**. Track damage, skills, and crit
 
 | Live Dashboard | Skill Breakdown | Build Comparison |
 |----------------|-----------------|------------------|
-| ![Live]([screenshots/live.png](https://github.com/mjb6967/CKdpsApp/blob/screenshots/live.png)) | ![Skills](screenshots/skills.png) | ![Compare](screenshots/compare.png) |
+|![image](https://github.com/mjb6967/CKdpsApp/blob/screenshots/live.png)| ![image](https://github.com/mjb6967/CKdpsApp/blob/screenshots/skills.png) | ![image](https://github.com/mjb6967/CKdpsApp/blob/screenshots/compare.png) |
 
 ---
 
