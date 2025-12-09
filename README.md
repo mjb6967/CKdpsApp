@@ -2,24 +2,20 @@
 
 A real-time DPS meter for **Throne and Liberty**. Track damage, skills, and crits in real-time. Save encounters, tag your builds, and compare them side-by-side to optimize your setup. Party mode for group DPS. Reads combat logs only — no injection, fully local.
 
-[![VirusTotal](https://img.shields.io/badge/VirusTotal-0%2F72%20Clean-brightgreen)](YOUR_VIRUSTOTAL_LINK_HERE)
-[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-0.14--beta-orange)]()
-
 ---
 
 ## 📸 Screenshots
 
 | Live Dashboard | Skill Breakdown | Build Comparison |
 |----------------|-----------------|------------------|
-|![image](https://github.com/mjb6967/CKdpsApp/blob/screenshots/live.png)| ![image](https://github.com/mjb6967/CKdpsApp/blob/screenshots/skills.png) | ![image](https://github.com/mjb6967/CKdpsApp/blob/screenshots/compare.png) |
+| ![Live](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/live.png) | ![Skills](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/skills.png) | ![Compare](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/compare.png) |
 
 ---
 
 ## ✨ Features
 
 ### Real-Time Tracking
-- **Live DPS** — Updates every 500ms as you fight
+- **Live DPS** — Updates automatically when combat logs are written
 - **Skill Breakdown** — Damage per skill with hit counts, crit rates, heavy rates
 - **Crit & Heavy Analysis** — Dedicated tabs for deep stat analysis
 - **Timeline** — Visual DPS graph over encounter duration
@@ -50,15 +46,13 @@ This tool is **completely safe** and does not interact with the game in any way:
 | ✅ Opens dashboard in your browser | ❌ No packet sniffing |
 | ✅ Connects to party server (optional) | ❌ No game file modification |
 
-### Technical Details
-- **Log Location:** `%LOCALAPPDATA%\TL\Saved\CombatLogs`
-- **Local Server:** `localhost:8765` (never exposed to internet)
-- **Party Server:** `tl-party-production.up.railway.app` (optional, Discord OAuth)
+### How It Works
+- **Log Location:** `%LOCALAPPDATA%\TL\Saved\CombatLogs` — plain text CSV files created by the game
+- **Local Server:** Runs on `localhost:8765` — never exposed to the internet
+- **Party Server:** `tl-party-production.up.railway.app` — optional, uses Discord login
 
-### Verify Yourself
-- 🔍 [VirusTotal Scan](YOUR_VIRUSTOTAL_LINK_HERE) — 0/72 detections
-- 📖 Source code is right here — inspect it yourself
-- 🛡️ Windows SmartScreen warning is normal for unsigned apps — click "More info" → "Run anyway"
+### Why SmartScreen Warning?
+Windows shows "Unknown Publisher" for apps without a code signing certificate ($300+/year). This is normal for indie tools. Click **"More info"** → **"Run anyway"** to proceed.
 
 ---
 
@@ -138,29 +132,6 @@ Settings are stored in `config.json` next to the exe:
 
 ---
 
-## 🏗️ Building from Source
-
-If you prefer to run from source:
-
-### Requirements
-- Python 3.10+
-- Dependencies: `pip install -r requirements.txt`
-
-### Run
-```bash
-python server.py
-```
-
-### Build Executable
-```bash
-pip install pyinstaller
-build.bat
-```
-
-Output will be in `dist/` folder.
-
----
-
 ## 📋 Changelog
 
 ### v0.14-beta
@@ -174,34 +145,27 @@ Output will be in `dist/` folder.
 - **NEW:** First 60 seconds tracking for fair comparisons
 - **IMPROVED:** Skill breakdown UI
 
-[Full Changelog](CHANGELOG.md)
-
 ---
 
-## 🤝 Contributing
+## ❓ FAQ
 
-Contributions welcome! Feel free to:
-- 🐛 Report bugs via [Issues](../../issues)
-- 💡 Suggest features
-- 🔧 Submit pull requests
+**Q: Is this bannable?**  
+A: This tool only reads log files the game creates. It does not inject, modify, or interact with the game. Use at your own discretion.
 
----
+**Q: Why no damage showing?**  
+A: Make sure Combat Meter is enabled in-game (Ring Menu). Logs only write after leaving combat.
 
-## 📄 License
+**Q: Party mode not connecting?**  
+A: Disable and re-enable Party Broadcasting to refresh your Discord login.
 
-This project is licensed under the **GPL v3 License** — see [LICENSE](LICENSE) for details.
-
-This means you can:
-- ✅ Use it freely
-- ✅ Modify it
-- ✅ Distribute it
-- ⚠️ But you must also open source any modifications
+**Q: Windows blocks the download?**  
+A: Click "Keep" or "More info" → "Run anyway". This is normal for unsigned apps.
 
 ---
 
 ## ☕ Support
 
-If you find this useful, consider:
+If you find this useful:
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-yellow?logo=buy-me-a-coffee)](https://buymeacoffee.com/SirPHz)
 
@@ -209,7 +173,7 @@ If you find this useful, consider:
 
 ## 📬 Contact
 
-- **Discord:** [Your Discord Server](YOUR_DISCORD_LINK)
+- **Discord:** SirPHz
 - **Issues:** [GitHub Issues](../../issues)
 
 ---
