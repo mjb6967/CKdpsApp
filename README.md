@@ -68,7 +68,7 @@ Windows shows "Unknown Publisher" for apps without a code signing certificate ($
 The game must be configured to write combat logs:
 
 1. Open **Throne and Liberty**
-2. Go to **Settings → Shortcuts → Ring Menu Settings**
+2. Go to **Ring Menu - Turn on Detailed Combat Log**
 3. Add **"Combat Meter"** to a Ring Menu slot
 4. In-game, open Ring Menu and **activate Combat Meter**
 5. Logs will appear in `%LOCALAPPDATA%\TL\Saved\CombatLogs`
