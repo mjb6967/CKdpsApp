@@ -59,7 +59,7 @@ Windows shows "Unknown Publisher" for apps without a code signing certificate ($
 ## 📥 Download & Install
 
 ### Quick Start
-1. **[Download Latest Release](../../releases/latest)** — Get `TL-DPS-Meter.zip`
+1. **[Download Latest Release](../../releases/latest)** — Get `CKDPS.zip`
 2. **Extract** anywhere (e.g., `C:\Games\TL-DPS-Meter`)
 3. **Run** `TL-DPS-Meter.exe`
 4. **Dashboard** opens automatically in your browser
