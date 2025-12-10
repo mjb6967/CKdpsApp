@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ツCKヤ DPS Meter - Web</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .app { display: flex; height: 100vh; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.3);
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #334155;
+            background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, transparent 100%);
+        }
+
+        .brand-logo {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px 0;
+        }
+
+        .brand-main {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-swords {
+            position: absolute;
+            font-size: 3.5rem;
+            opacity: 0.15;
+            color: #22d3ee;
+            filter: blur(1px);
+            z-index: 0;
+        }
+
+        .brand-name {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .brand-name .jp {
+            color: #f472b6;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-shadow: 0 0 15px rgba(244, 114, 182, 0.6);
+        }
+
+        .brand-name .ck {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #22d3ee 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.4));
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: #64748b;
+            margin-top: -2px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .status-dot.connected {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+        }
+
+        .version-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(34, 211, 238, 0.15);
+            color: #22d3ee;
+            margin-left: auto;
+        }
+
+        /* Stats Overview */
+        .stats-overview {
+            padding: 16px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .main-dps {
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        .main-dps .value {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(180deg, #22d3ee 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .main-dps .label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-item .value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .stat-item .label {
+            font-size: 0.65rem;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        /* Buttons */
+        .sidebar-actions {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22d3ee 0%, #a78bfa 100%);
+            color: #0f172a;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            border: 1px solid #334155;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            padding: 0 16px;
+            border-bottom: 1px solid #334155;
+            margin-top: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:hover {
+            color: #94a3b8;
+        }
+
+        .nav-tab.active {
+            color: #22d3ee;
+            border-bottom-color: #22d3ee;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Connect Panel */
+        .connect-panel {
+            max-width: 600px;
+            margin: 60px auto;
+            text-align: center;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        .connect-panel h2 {
+            font-size: 1.5rem;
+            color: #22d3ee;
+            margin-bottom: 12px;
+        }
+
+        .connect-panel p {
+            color: #94a3b8;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .connect-panel .path-hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-family: 'Consolas', monospace;
+            word-break: break-all;
+        }
+
+        .connect-panel .btn-primary {
+            font-size: 1rem;
+            padding: 14px 28px;
+        }
+
+        .browser-warning {
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 6px;
+            color: #fbbf24;
+            font-size: 0.8rem;
+        }
+
+        /* Skills Table */
+        .skills-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .skills-table th {
+            text-align: left;
+            padding: 12px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #64748b;
+            border-bottom: 1px solid #334155;
+        }
+
+        .skills-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        .skill-row {
+            transition: background 0.2s;
+        }
+
+        .skill-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .skill-name {
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .skill-damage {
+            font-weight: 600;
+            color: #22d3ee;
+        }
+
+        .damage-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .damage-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #22d3ee 0%, #a78bfa 100%);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .stat-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-badge.crit {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+        }
+
+        .stat-badge.heavy {
+            background: rgba(244, 114, 182, 0.15);
+            color: #f472b6;
+        }
+
+        /* Saved Encounters */
+        .encounters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .encounters-header h2 {
+            font-size: 1.25rem;
+            color: #f1f5f9;
+        }
+
+        .encounter-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .encounter-card:hover {
+            border-color: #22d3ee;
+            background: rgba(34, 211, 238, 0.05);
+        }
+
+        .encounter-card.selected {
+            border-color: #22d3ee;
+            background: rgba(34, 211, 238, 0.1);
+        }
+
+        .encounter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .encounter-title {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .encounter-date {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .encounter-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+        }
+
+        .encounter-stats span {
+            color: #94a3b8;
+        }
+
+        .encounter-stats strong {
+            color: #22d3ee;
+        }
+
+        .encounter-build {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            background: rgba(167, 139, 250, 0.15);
+            color: #a78bfa;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Compare View */
+        .compare-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .compare-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .compare-panel h3 {
+            font-size: 1rem;
+            color: #22d3ee;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .compare-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+        }
+
+        .compare-stat .label {
+            color: #94a3b8;
+        }
+
+        .compare-stat .value {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .compare-stat .value.better {
+            color: #22c55e;
+        }
+
+        .compare-stat .value.worse {
+            color: #ef4444;
+        }
+
+        /* Timeline */
+        .timeline-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .timeline-chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            padding: 10px 0;
+        }
+
+        .timeline-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #22d3ee 0%, #a78bfa 100%);
+            border-radius: 2px 2px 0 0;
+            min-width: 4px;
+            transition: height 0.3s;
+        }
+
+        /* Top Hits */
+        .top-hits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .top-hit {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .top-hit-medal {
+            font-size: 1.5rem;
+        }
+
+        .top-hit-info {
+            flex: 1;
+        }
+
+        .top-hit-skill {
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .top-hit-target {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .top-hit-damage {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #22d3ee;
+        }
+
+        /* Save Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .modal h3 {
+            font-size: 1.25rem;
+            color: #f1f5f9;
+            margin-bottom: 16px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: #22d3ee;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            color: #f1f5f9;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Targets Tab */
+        .target-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .target-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .target-name {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .target-damage {
+            font-weight: 700;
+            color: #22d3ee;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            .compare-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <div class="brand-main">
+                        <span class="brand-swords">⚔️</span>
+                        <div class="brand-name">
+                            <span class="jp">ツ</span>
+                            <span class="ck">CK</span>
+                            <span class="jp">ヤ</span>
+                        </div>
+                    </div>
+                    <div class="brand-subtitle">DPS Meter</div>
+                </div>
+                <div class="connection-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Not Connected</span>
+                    <span class="version-badge">Web v1.0</span>
+                </div>
+            </div>
+
+            <div class="stats-overview">
+                <div class="main-dps">
+                    <div class="value" id="mainDps">0</div>
+                    <div class="label">DPS</div>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <div class="value" id="totalDamage">0</div>
+                        <div class="label">Total Damage</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="value" id="duration">0s</div>
+                        <div class="label">Duration</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="value" id="critRate">0%</div>
+                        <div class="label">Crit Rate</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="value" id="heavyRate">0%</div>
+                        <div class="label">Heavy Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-actions">
+                <button class="btn btn-primary" id="connectBtn" onclick="connectToLogs()">
+                    📁 Connect to Combat Logs
+                </button>
+                <button class="btn btn-danger" id="resetBtn" onclick="resetEncounter()" disabled>
+                    🔄 Reset Encounter
+                </button>
+                <button class="btn btn-secondary" id="saveBtn" onclick="openSaveModal()" disabled>
+                    💾 Save Encounter
+                </button>
+            </div>
+
+            <nav class="nav-tabs">
+                <div class="nav-tab active" onclick="showTab('skills')">Skills</div>
+                <div class="nav-tab" onclick="showTab('timeline')">Timeline</div>
+                <div class="nav-tab" onclick="showTab('targets')">Targets</div>
+                <div class="nav-tab" onclick="showTab('saved')">Saved</div>
+                <div class="nav-tab" onclick="showTab('compare')">Compare</div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Connect Panel (shown when not connected) -->
+            <div class="connect-panel" id="connectPanel">
+                <h2>📁 Connect to Combat Logs</h2>
+                <p>
+                    This web app needs permission to read your combat logs folder.
+                    Click the button below and navigate to:
+                </p>
+                <div class="path-hint">
+                    %LOCALAPPDATA%\TL\Saved\CombatLogs<br><br>
+                    Usually: C:\Users\[YourName]\AppData\Local\TL\Saved\CombatLogs
+                </div>
+                <button class="btn btn-primary" onclick="connectToLogs()">
+                    📁 Select Combat Logs Folder
+                </button>
+                <div class="browser-warning" id="browserWarning" style="display: none;">
+                    ⚠️ Your browser doesn't support folder access. Please use Chrome or Edge.
+                </div>
+            </div>
+
+            <!-- Skills Tab -->
+            <div class="tab-content" id="tab-skills">
+                <div class="section-header">
+                    <h2>Skill Breakdown</h2>
+                </div>
+                <table class="skills-table">
+                    <thead>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Damage</th>
+                            <th>Hits</th>
+                            <th>Crit %</th>
+                            <th>Heavy %</th>
+                            <th>% of Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="skillsBody">
+                        <tr><td colspan="6" class="empty-state">No data yet. Enter combat to see stats.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Timeline Tab -->
+            <div class="tab-content" id="tab-timeline">
+                <div class="section-header">
+                    <h2>DPS Timeline</h2>
+                </div>
+                <div class="timeline-container">
+                    <div class="timeline-chart" id="timelineChart">
+                        <div class="empty-state">No data yet</div>
+                    </div>
+                </div>
+                <div class="section-header">
+                    <h2>Top 10 Hits</h2>
+                </div>
+                <div class="top-hits-list" id="topHitsList">
+                    <div class="empty-state">No hits recorded yet</div>
+                </div>
+            </div>
+
+            <!-- Targets Tab -->
+            <div class="tab-content" id="tab-targets">
+                <div class="section-header">
+                    <h2>Target Breakdown</h2>
+                </div>
+                <div id="targetsList">
+                    <div class="empty-state">No targets yet</div>
+                </div>
+            </div>
+
+            <!-- Saved Tab -->
+            <div class="tab-content" id="tab-saved">
+                <div class="encounters-header">
+                    <h2>Saved Encounters</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary" onclick="exportEncounters()">📤 Export</button>
+                        <button class="btn btn-secondary" onclick="importEncounters()">📥 Import</button>
+                    </div>
+                </div>
+                <div id="encountersList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No saved encounters yet.<br>Complete an encounter and click "Save Encounter".</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compare Tab -->
+            <div class="tab-content" id="tab-compare">
+                <div class="section-header">
+                    <h2>Compare Builds</h2>
+                    <span style="color: #64748b; font-size: 0.85rem;">Select 2 encounters from Saved tab</span>
+                </div>
+                <div id="compareContent">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚖️</div>
+                        <p>Select 2 encounters from the Saved tab to compare them.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Save Modal -->
+    <div class="modal-overlay" id="saveModal">
+        <div class="modal">
+            <h3>💾 Save Encounter</h3>
+            <input type="text" class="modal-input" id="buildTagInput" placeholder="Build tag (e.g., GS/Dagger Crit Build)">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeSaveModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEncounter()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="importInput" accept=".json" style="display: none;" onchange="handleImport(event)">
+
+    <script>
+        // ============================================
+        // STATE
+        // ============================================
+        let folderHandle = null;
+        let isConnected = false;
+        let pollInterval = null;
+        let lastFileSize = {};
+        let lastModified = {};
+        
+        // Combat stats
+        let stats = {
+            totalDamage: 0,
+            hitCount: 0,
+            critCount: 0,
+            critDamage: 0,
+            heavyCount: 0,
+            heavyDamage: 0,
+            firstHitTime: null,
+            lastHitTime: null,
+            skillDamage: {},
+            skillCounts: {},
+            skillCrits: {},
+            skillHeavies: {},
+            targetDamage: {},
+            timeline: {},
+            hitLog: [],
+            // First 60 seconds
+            damage60s: 0,
+            hitCount60s: 0,
+            critCount60s: 0,
+            critDamage60s: 0,
+            heavyCount60s: 0,
+            heavyDamage60s: 0,
+            skillDamage60s: {},
+            skillCounts60s: {},
+            skillCrits60s: {},
+            skillHeavies60s: {}
+        };
+
+        let processedLines = new Set();
+        let selectedEncounters = [];
+        let encounters = JSON.parse(localStorage.getItem('encounters') || '[]');
+
+        // ============================================
+        // FILE SYSTEM ACCESS
+        // ============================================
+        async function connectToLogs() {
+            // Check browser support
+            if (!('showDirectoryPicker' in window)) {
+                document.getElementById('browserWarning').style.display = 'block';
+                return;
+            }
+
+            try {
+                folderHandle = await window.showDirectoryPicker({
+                    mode: 'read'
+                });
+                
+                isConnected = true;
+                updateConnectionStatus(true);
+                document.getElementById('connectPanel').style.display = 'none';
+                document.getElementById('tab-skills').classList.add('active');
+                document.getElementById('resetBtn').disabled = false;
+                document.getElementById('saveBtn').disabled = false;
+                document.getElementById('connectBtn').textContent = '✅ Connected';
+                document.getElementById('connectBtn').disabled = true;
+
+                // Start polling for changes
+                startPolling();
+                
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Error accessing folder:', err);
+                    alert('Failed to access folder. Please try again.');
+                }
+            }
+        }
+
+        function startPolling() {
+            // Poll every 500ms for file changes
+            pollInterval = setInterval(async () => {
+                await checkForUpdates();
+            }, 500);
+        }
+
+        async function checkForUpdates() {
+            if (!folderHandle) return;
+
+            try {
+                for await (const entry of folderHandle.values()) {
+                    if (entry.kind === 'file' && entry.name.endsWith('.txt')) {
+                        const file = await entry.getFile();
+                        const key = entry.name;
+                        
+                        // Check if file has changed
+                        if (lastModified[key] !== file.lastModified || lastFileSize[key] !== file.size) {
+                            lastModified[key] = file.lastModified;
+                            lastFileSize[key] = file.size;
+                            
+                            const text = await file.text();
+                            parseLogFile(text, key);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Error reading files:', err);
+            }
+        }
+
+        // ============================================
+        // PARSING
+        // ============================================
+        function parseLogFile(text, filename) {
+            const lines = text.split('\n');
+            
+            for (const line of lines) {
+                // Create unique key for this line to avoid reprocessing
+                const lineKey = filename + ':' + line.trim();
+                if (processedLines.has(lineKey)) continue;
+                processedLines.add(lineKey);
+                
+                const entry = parseLine(line);
+                if (entry) {
+                    processEntry(entry);
+                }
+            }
+            
+            updateUI();
+        }
+
+        function parseLine(line) {
+            line = line.trim();
+            if (!line) return null;
+            if (line.startsWith('CombatLogVersion')) return null;
+
+            const parts = line.split(',');
+            if (parts.length < 10) return null;
+
+            try {
+                const timestamp = parts[0];
+                const logType = parts[1];
+                const skillName = parts[2];
+                const skillId = parts[3];
+                const damage = parseInt(parts[4]) || 0;
+                const hitCrit = parts[5] === '1';
+                const hitDouble = parts[6] === '1';
+                const hitType = parts[7];
+                const casterName = parts[8];
+                const targetName = parts.slice(9).join(','); // Target may have commas
+
+                // Parse timestamp: 20251204-09:45:02:197
+                let parsedTime = null;
+                try {
+                    const [datePart, timePart] = timestamp.split('-');
+                    const year = parseInt(datePart.substring(0, 4));
+                    const month = parseInt(datePart.substring(4, 6)) - 1;
+                    const day = parseInt(datePart.substring(6, 8));
+                    
+                    const timeParts = timePart.split(':');
+                    const hour = parseInt(timeParts[0]);
+                    const minute = parseInt(timeParts[1]);
+                    const second = parseInt(timeParts[2]);
+                    const ms = parseInt(timeParts[3]) || 0;
+                    
+                    parsedTime = new Date(year, month, day, hour, minute, second, ms);
+                } catch (e) {
+                    parsedTime = new Date();
+                }
+
+                return {
+                    timestamp,
+                    parsedTime,
+                    logType,
+                    skillName: skillName || 'Auto Attack',
+                    skillId,
+                    damage,
+                    hitCritical: hitCrit,
+                    hitDouble: hitDouble,
+                    hitType,
+                    casterName,
+                    targetName: targetName || 'Unknown'
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function processEntry(entry) {
+            if (entry.logType !== 'DamageDone') return;
+
+            const hitTime = entry.parsedTime;
+            
+            // Track first and last hit times
+            if (stats.firstHitTime === null) {
+                stats.firstHitTime = hitTime;
+            }
+            stats.lastHitTime = hitTime;
+
+            // Calculate seconds into fight
+            let secondsIntoFight = 0;
+            if (hitTime && stats.firstHitTime) {
+                secondsIntoFight = (hitTime - stats.firstHitTime) / 1000;
+            }
+
+            const damage = entry.damage;
+            const skillName = entry.skillName;
+            const targetName = entry.targetName;
+            const hitType = entry.hitType || '';
+
+            // Determine crit/heavy
+            const isCrit = entry.hitCritical || hitType.includes('Critical');
+            const isHeavy = entry.hitDouble || hitType.includes('Heavy');
+
+            // Update overall stats
+            stats.totalDamage += damage;
+            stats.hitCount++;
+            stats.skillDamage[skillName] = (stats.skillDamage[skillName] || 0) + damage;
+            stats.skillCounts[skillName] = (stats.skillCounts[skillName] || 0) + 1;
+            stats.targetDamage[targetName] = (stats.targetDamage[targetName] || 0) + damage;
+
+            // Timeline
+            const secondBucket = Math.floor(secondsIntoFight);
+            stats.timeline[secondBucket] = (stats.timeline[secondBucket] || 0) + damage;
+
+            // Crit tracking
+            if (isCrit) {
+                stats.critCount++;
+                stats.critDamage += damage;
+                stats.skillCrits[skillName] = (stats.skillCrits[skillName] || 0) + 1;
+            }
+
+            // Heavy tracking
+            if (isHeavy) {
+                stats.heavyCount++;
+                stats.heavyDamage += damage;
+                stats.skillHeavies[skillName] = (stats.skillHeavies[skillName] || 0) + 1;
+            }
+
+            // Hit log entry
+            const hitEntry = {
+                time: hitTime ? hitTime.toLocaleTimeString() : entry.timestamp,
+                relativeTime: secondsIntoFight.toFixed(1),
+                skill: skillName,
+                target: targetName,
+                damage: damage,
+                isCrit: isCrit,
+                isHeavy: isHeavy
+            };
+            stats.hitLog.push(hitEntry);
+
+            // First 60 seconds
+            if (secondsIntoFight <= 60) {
+                stats.damage60s += damage;
+                stats.hitCount60s++;
+                stats.skillDamage60s[skillName] = (stats.skillDamage60s[skillName] || 0) + damage;
+                stats.skillCounts60s[skillName] = (stats.skillCounts60s[skillName] || 0) + 1;
+                
+                if (isCrit) {
+                    stats.critCount60s++;
+                    stats.critDamage60s += damage;
+                    stats.skillCrits60s[skillName] = (stats.skillCrits60s[skillName] || 0) + 1;
+                }
+                if (isHeavy) {
+                    stats.heavyCount60s++;
+                    stats.heavyDamage60s += damage;
+                    stats.skillHeavies60s[skillName] = (stats.skillHeavies60s[skillName] || 0) + 1;
+                }
+            }
+        }
+
+        // ============================================
+        // UI UPDATES
+        // ============================================
+        function updateUI() {
+            // Calculate duration and DPS
+            let duration = 0;
+            if (stats.firstHitTime && stats.lastHitTime) {
+                duration = (stats.lastHitTime - stats.firstHitTime) / 1000;
+            }
+            const dps = duration > 0 ? Math.round(stats.totalDamage / duration) : 0;
+
+            // Update main stats
+            document.getElementById('mainDps').textContent = formatNumber(dps);
+            document.getElementById('totalDamage').textContent = formatNumber(stats.totalDamage);
+            document.getElementById('duration').textContent = formatDuration(duration);
+            
+            const critRate = stats.hitCount > 0 ? (stats.critCount / stats.hitCount * 100).toFixed(1) : 0;
+            const heavyRate = stats.hitCount > 0 ? (stats.heavyCount / stats.hitCount * 100).toFixed(1) : 0;
+            document.getElementById('critRate').textContent = critRate + '%';
+            document.getElementById('heavyRate').textContent = heavyRate + '%';
+
+            // Update skills table
+            updateSkillsTable();
+            
+            // Update timeline
+            updateTimeline();
+            
+            // Update top hits
+            updateTopHits();
+            
+            // Update targets
+            updateTargets();
+        }
+
+        function updateSkillsTable() {
+            const tbody = document.getElementById('skillsBody');
+            const skills = Object.keys(stats.skillDamage).sort((a, b) => 
+                stats.skillDamage[b] - stats.skillDamage[a]
+            );
+
+            if (skills.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No data yet. Enter combat to see stats.</td></tr>';
+                return;
+            }
+
+            const maxDamage = Math.max(...Object.values(stats.skillDamage));
+
+            tbody.innerHTML = skills.map(skill => {
+                const damage = stats.skillDamage[skill];
+                const hits = stats.skillCounts[skill] || 0;
+                const crits = stats.skillCrits[skill] || 0;
+                const heavies = stats.skillHeavies[skill] || 0;
+                const critRate = hits > 0 ? (crits / hits * 100).toFixed(1) : 0;
+                const heavyRate = hits > 0 ? (heavies / hits * 100).toFixed(1) : 0;
+                const pctOfTotal = stats.totalDamage > 0 ? (damage / stats.totalDamage * 100).toFixed(1) : 0;
+                const barWidth = maxDamage > 0 ? (damage / maxDamage * 100) : 0;
+
+                return `
+                    <tr class="skill-row">
+                        <td><span class="skill-name">${skill}</span></td>
+                        <td>
+                            <span class="skill-damage">${formatNumber(damage)}</span>
+                            <div class="damage-bar-container">
+                                <div class="damage-bar" style="width: ${barWidth}%"></div>
+                            </div>
+                        </td>
+                        <td>${hits}</td>
+                        <td><span class="stat-badge crit">${critRate}%</span></td>
+                        <td><span class="stat-badge heavy">${heavyRate}%</span></td>
+                        <td>${pctOfTotal}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateTimeline() {
+            const chart = document.getElementById('timelineChart');
+            const seconds = Object.keys(stats.timeline).map(Number).sort((a, b) => a - b);
+            
+            if (seconds.length === 0) {
+                chart.innerHTML = '<div class="empty-state">No data yet</div>';
+                return;
+            }
+
+            const maxDps = Math.max(...Object.values(stats.timeline));
+            
+            chart.innerHTML = seconds.map(sec => {
+                const damage = stats.timeline[sec];
+                const height = maxDps > 0 ? (damage / maxDps * 100) : 0;
+                return `<div class="timeline-bar" style="height: ${height}%" title="${sec}s: ${formatNumber(damage)} damage"></div>`;
+            }).join('');
+        }
+
+        function updateTopHits() {
+            const container = document.getElementById('topHitsList');
+            const sorted = [...stats.hitLog].sort((a, b) => b.damage - a.damage).slice(0, 10);
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<div class="empty-state">No hits recorded yet</div>';
+                return;
+            }
+
+            const medals = ['🥇', '🥈', '🥉'];
+            
+            container.innerHTML = sorted.map((hit, i) => `
+                <div class="top-hit">
+                    <span class="top-hit-medal">${medals[i] || ''}</span>
+                    <div class="top-hit-info">
+                        <div class="top-hit-skill">${hit.skill} ${hit.isCrit ? '⚡' : ''} ${hit.isHeavy ? '💪' : ''}</div>
+                        <div class="top-hit-target">${hit.target} @ ${hit.relativeTime}s</div>
+                    </div>
+                    <div class="top-hit-damage">${formatNumber(hit.damage)}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateTargets() {
+            const container = document.getElementById('targetsList');
+            const targets = Object.entries(stats.targetDamage).sort((a, b) => b[1] - a[1]);
+            
+            if (targets.length === 0) {
+                container.innerHTML = '<div class="empty-state">No targets yet</div>';
+                return;
+            }
+
+            const maxDamage = Math.max(...Object.values(stats.targetDamage));
+
+            container.innerHTML = targets.map(([name, damage]) => {
+                const pct = stats.totalDamage > 0 ? (damage / stats.totalDamage * 100).toFixed(1) : 0;
+                const barWidth = maxDamage > 0 ? (damage / maxDamage * 100) : 0;
+                
+                return `
+                    <div class="target-card">
+                        <div class="target-header">
+                            <span class="target-name">⚔️ ${name}</span>
+                            <span class="target-damage">${formatNumber(damage)} (${pct}%)</span>
+                        </div>
+                        <div class="damage-bar-container">
+                            <div class="damage-bar" style="width: ${barWidth}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateConnectionStatus(connected) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            if (connected) {
+                dot.classList.add('connected');
+                text.textContent = 'Watching for logs...';
+            } else {
+                dot.classList.remove('connected');
+                text.textContent = 'Not Connected';
+            }
+        }
+
+        // ============================================
+        // ENCOUNTER MANAGEMENT
+        // ============================================
+        function resetEncounter() {
+            stats = {
+                totalDamage: 0,
+                hitCount: 0,
+                critCount: 0,
+                critDamage: 0,
+                heavyCount: 0,
+                heavyDamage: 0,
+                firstHitTime: null,
+                lastHitTime: null,
+                skillDamage: {},
+                skillCounts: {},
+                skillCrits: {},
+                skillHeavies: {},
+                targetDamage: {},
+                timeline: {},
+                hitLog: [],
+                damage60s: 0,
+                hitCount60s: 0,
+                critCount60s: 0,
+                critDamage60s: 0,
+                heavyCount60s: 0,
+                heavyDamage60s: 0,
+                skillDamage60s: {},
+                skillCounts60s: {},
+                skillCrits60s: {},
+                skillHeavies60s: {}
+            };
+            processedLines.clear();
+            updateUI();
+        }
+
+        function openSaveModal() {
+            document.getElementById('saveModal').classList.add('active');
+            document.getElementById('buildTagInput').focus();
+        }
+
+        function closeSaveModal() {
+            document.getElementById('saveModal').classList.remove('active');
+            document.getElementById('buildTagInput').value = '';
+        }
+
+        function saveEncounter() {
+            const buildTag = document.getElementById('buildTagInput').value.trim() || 'No Build Tag';
+            
+            let duration = 0;
+            if (stats.firstHitTime && stats.lastHitTime) {
+                duration = (stats.lastHitTime - stats.firstHitTime) / 1000;
+            }
+
+            const encounter = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                buildTag: buildTag,
+                overall: {
+                    dps: duration > 0 ? Math.round(stats.totalDamage / duration) : 0,
+                    totalDamage: stats.totalDamage,
+                    duration: duration,
+                    hitCount: stats.hitCount,
+                    critCount: stats.critCount,
+                    critRate: stats.hitCount > 0 ? (stats.critCount / stats.hitCount * 100) : 0,
+                    heavyCount: stats.heavyCount,
+                    heavyRate: stats.hitCount > 0 ? (stats.heavyCount / stats.hitCount * 100) : 0,
+                    skillDamage: {...stats.skillDamage},
+                    skillCounts: {...stats.skillCounts},
+                    skillCrits: {...stats.skillCrits},
+                    skillHeavies: {...stats.skillHeavies}
+                },
+                first60s: {
+                    damage: stats.damage60s,
+                    dps: Math.round(stats.damage60s / Math.min(60, duration || 1)),
+                    hitCount: stats.hitCount60s,
+                    critCount: stats.critCount60s,
+                    critRate: stats.hitCount60s > 0 ? (stats.critCount60s / stats.hitCount60s * 100) : 0,
+                    heavyCount: stats.heavyCount60s,
+                    heavyRate: stats.hitCount60s > 0 ? (stats.heavyCount60s / stats.hitCount60s * 100) : 0,
+                    skillDamage: {...stats.skillDamage60s},
+                    skillCounts: {...stats.skillCounts60s},
+                    skillCrits: {...stats.skillCrits60s},
+                    skillHeavies: {...stats.skillHeavies60s}
+                }
+            };
+
+            encounters.unshift(encounter);
+            localStorage.setItem('encounters', JSON.stringify(encounters));
+            closeSaveModal();
+            renderEncounters();
+            showTab('saved');
+        }
+
+        function renderEncounters() {
+            const container = document.getElementById('encountersList');
+            
+            if (encounters.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>No saved encounters yet.<br>Complete an encounter and click "Save Encounter".</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = encounters.map(enc => {
+                const date = new Date(enc.date);
+                const isSelected = selectedEncounters.includes(enc.id);
+                
+                return `
+                    <div class="encounter-card ${isSelected ? 'selected' : ''}" onclick="toggleEncounterSelection(${enc.id})">
+                        <div class="encounter-header">
+                            <span class="encounter-title">${formatNumber(enc.overall.dps)} DPS</span>
+                            <span class="encounter-date">${date.toLocaleDateString()} ${date.toLocaleTimeString()}</span>
+                        </div>
+                        <div class="encounter-stats">
+                            <span>Damage: <strong>${formatNumber(enc.overall.totalDamage)}</strong></span>
+                            <span>Duration: <strong>${formatDuration(enc.overall.duration)}</strong></span>
+                            <span>Crit: <strong>${enc.overall.critRate.toFixed(1)}%</strong></span>
+                        </div>
+                        <div class="encounter-build">${enc.buildTag}</div>
+                        <button class="btn btn-danger" style="margin-top: 8px; padding: 4px 8px; font-size: 0.75rem;" onclick="event.stopPropagation(); deleteEncounter(${enc.id})">🗑️ Delete</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleEncounterSelection(id) {
+            const idx = selectedEncounters.indexOf(id);
+            if (idx > -1) {
+                selectedEncounters.splice(idx, 1);
+            } else if (selectedEncounters.length < 2) {
+                selectedEncounters.push(id);
+            } else {
+                selectedEncounters.shift();
+                selectedEncounters.push(id);
+            }
+            renderEncounters();
+            updateCompare();
+        }
+
+        function deleteEncounter(id) {
+            if (!confirm('Delete this encounter?')) return;
+            encounters = encounters.filter(e => e.id !== id);
+            selectedEncounters = selectedEncounters.filter(sid => sid !== id);
+            localStorage.setItem('encounters', JSON.stringify(encounters));
+            renderEncounters();
+            updateCompare();
+        }
+
+        function updateCompare() {
+            const container = document.getElementById('compareContent');
+            
+            if (selectedEncounters.length < 2) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚖️</div>
+                        <p>Select 2 encounters from the Saved tab to compare them.<br>
+                        Selected: ${selectedEncounters.length}/2</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const enc1 = encounters.find(e => e.id === selectedEncounters[0]);
+            const enc2 = encounters.find(e => e.id === selectedEncounters[1]);
+
+            if (!enc1 || !enc2) return;
+
+            container.innerHTML = `
+                <p style="color: #64748b; margin-bottom: 16px; font-size: 0.85rem;">
+                    Comparing first 60 seconds of each encounter for fair comparison.
+                </p>
+                <div class="compare-container">
+                    ${renderComparePanel(enc1, enc2, true)}
+                    ${renderComparePanel(enc2, enc1, false)}
+                </div>
+            `;
+        }
+
+        function renderComparePanel(enc, other, isFirst) {
+            const s = enc.first60s;
+            const o = other.first60s;
+            
+            return `
+                <div class="compare-panel">
+                    <h3>${enc.buildTag}</h3>
+                    <div class="compare-stat">
+                        <span class="label">DPS (60s)</span>
+                        <span class="value ${compareClass(s.dps, o.dps)}">${formatNumber(s.dps)}</span>
+                    </div>
+                    <div class="compare-stat">
+                        <span class="label">Damage (60s)</span>
+                        <span class="value ${compareClass(s.damage, o.damage)}">${formatNumber(s.damage)}</span>
+                    </div>
+                    <div class="compare-stat">
+                        <span class="label">Hits</span>
+                        <span class="value">${s.hitCount}</span>
+                    </div>
+                    <div class="compare-stat">
+                        <span class="label">Crit Rate</span>
+                        <span class="value ${compareClass(s.critRate, o.critRate)}">${s.critRate.toFixed(1)}%</span>
+                    </div>
+                    <div class="compare-stat">
+                        <span class="label">Heavy Rate</span>
+                        <span class="value ${compareClass(s.heavyRate, o.heavyRate)}">${s.heavyRate.toFixed(1)}%</span>
+                    </div>
+                    <div class="compare-stat">
+                        <span class="label">Overall DPS</span>
+                        <span class="value">${formatNumber(enc.overall.dps)}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function compareClass(val1, val2) {
+            if (val1 > val2) return 'better';
+            if (val1 < val2) return 'worse';
+            return '';
+        }
+
+        // ============================================
+        // IMPORT/EXPORT
+        // ============================================
+        function exportEncounters() {
+            const data = JSON.stringify(encounters, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `dps-encounters-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importEncounters() {
+            document.getElementById('importInput').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        encounters = [...imported, ...encounters];
+                        localStorage.setItem('encounters', JSON.stringify(encounters));
+                        renderEncounters();
+                        alert(`Imported ${imported.length} encounters!`);
+                    }
+                } catch (err) {
+                    alert('Invalid file format');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return Math.round(num).toString();
+        }
+
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        }
+
+        function showTab(tabName) {
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Hide connect panel if showing a tab
+            if (isConnected) {
+                document.getElementById('connectPanel').style.display = 'none';
+            }
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        function init() {
+            // Check browser support
+            if (!('showDirectoryPicker' in window)) {
+                document.getElementById('browserWarning').style.display = 'block';
+            }
+            
+            // Load saved encounters
+            renderEncounters();
+        }
+
+        init();
+    </script>
+</body>
+</html>
