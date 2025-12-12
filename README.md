@@ -6,6 +6,10 @@ A real-time DPS meter for **Throne and Liberty**. Track damage, skills, and crit
 
 ## 📸 Screenshots
 
+| Dashboard |
+|-----------|
+| ![Dashboard](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/dashboard.png) |
+
 | Skills | Top Hits | Rotation |
 |--------|----------|----------|
 | ![Skills](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/skills.png) | ![Top Hits](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/top-hits.png) | ![Rotation](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/rotation.png) |
