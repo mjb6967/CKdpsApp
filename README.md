@@ -6,9 +6,21 @@ A real-time DPS meter for **Throne and Liberty**. Track damage, skills, and crit
 
 ## 📸 Screenshots
 
-| Live Dashboard | Skill Breakdown | Build Comparison |
-|----------------|-----------------|------------------|
-| ![Live](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/live.png) | ![Skills](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/skills.png) | ![Compare](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/compare.png) |
+| Skills | Top Hits | Rotation |
+|--------|----------|----------|
+| ![Skills](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/skills.png) | ![Top Hits](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/top-hits.png) | ![Rotation](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/rotation.png) |
+
+| Timeline | Saved | Compare |
+|----------|-------|---------|
+| ![Timeline](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/timeline.png) | ![Saved](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/saved.png) | ![Compare](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/compare.png) |
+
+| Skill Settings | Log File | Party DPS |
+|----------------|----------|-----------|
+| ![Skill Settings](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/skill-settings.png) | ![Log File](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/log-file.png) | ![Party DPS](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/party-dps.png) |
+
+| Weapon Stats | Skill Assign |  |
+|--------------|--------------|--|
+| ![Weapon Stats](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/weapon-stats.png) | ![Skill Assign](https://raw.githubusercontent.com/mjb6967/CKdpsApp/screenshots/skill-assign.png) |  |
 
 ---
 
@@ -85,7 +97,7 @@ Windows shows "Unknown Publisher" for apps without a code signing certificate ($
 The game must be configured to write combat logs:
 
 1. Open **Throne and Liberty**
-2. Go to **Settings → Shortcuts → Ring Menu Settings**
+2. Go to **Ring Menu - Turn on Detailed Combat Log**
 3. Add **"Combat Meter"** to a Ring Menu slot
 4. In-game, open Ring Menu and **activate Combat Meter**
 5. Logs will appear in `%LOCALAPPDATA%\TL\Saved\CombatLogs`
