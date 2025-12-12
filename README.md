@@ -1,6 +1,6 @@
 # ツCKヤ DPS Meter
 
-A real-time DPS meter for **Throne and Liberty**. Track damage, skills, and crits in real-time. Save encounters, tag your builds, and compare them side-by-side to optimize your setup. Party mode for group DPS. Reads combat logs only — no injection, fully local.
+A real-time DPS meter for **Throne and Liberty**. Track damage, skills, and crits in real-time. Analyze your rotation with piano-roll timelines. Save encounters, tag your builds, and compare up to 4 side-by-side. Party mode for group DPS. Reads combat logs only — no injection, fully local.
 
 ---
 
@@ -16,22 +16,39 @@ A real-time DPS meter for **Throne and Liberty**. Track damage, skills, and crit
 
 ### Real-Time Tracking
 - **Live DPS** — Updates automatically when combat logs are written
+- **1-Min DPS** — First 60 seconds tracked separately for fair comparisons
 - **Skill Breakdown** — Damage per skill with hit counts, crit rates, heavy rates
-- **Crit & Heavy Analysis** — Dedicated tabs for deep stat analysis
-- **Timeline** — Visual DPS graph over encounter duration
+- **Crit & Heavy Analysis** — Normal, Crit, Heavy, and Crit+Heavy tracking
+- **Timeline** — Visual DPS graph and piano-roll skill timeline
 - **Top Hits** — Your biggest hits with medals 🥇🥈🥉
 - **Target Breakdown** — Damage split by enemy
 
+### Rotation Analysis
+- **Piano Roll** — See exactly when each skill was used over 60 seconds
+- **Gap Detection** — Identify downtime periods in your rotation
+- **Segment Breakdown** — DPS split into quarters (0-15s, 15-30s, etc.)
+- **Activity Rate** — Percentage of time dealing damage
+- **Peak 5s DPS** — Find your highest burst window
+- **Performance Insights** — Automated tips based on your data
+
+### Weapon Stats *(New in v0.18)*
+- **Damage by Weapon** — See how much each weapon contributes
+- **Skill Assignment** — Drag-and-drop skills to categorize by weapon
+- **Mastery Category** — For weapon-neutral abilities like passives
+- **Persistent Config** — Assignments saved to `weapon_config.json`
+
 ### Build Optimization
 - **Save Encounters** — Store your runs with custom build tags
-- **Compare Builds** — Side-by-side comparison of first 60 seconds
+- **Load Encounters** — View saved encounters in the main dashboard
+- **Compare 2-4 Builds** — Side-by-side comparison with rankings
 - **Filter & Sort** — Find saved encounters by build name or DPS
-- **Track Progress** — See how gear/skill changes affect performance
+- **Skill Settings** — Mark skills that can't crit/heavy for accurate rates
 
-### Party Mode
+### Party Mode *(Beta)*
 - **Group DPS Sync** — Compare damage with party members in real-time
 - **No Setup Required** — Built into the app, just enable and login with Discord
 - **Leader Controls** — Party leader starts/ends encounters for everyone
+- **Per-Target Results** — See who topped damage on each enemy
 
 ---
 
@@ -68,7 +85,7 @@ Windows shows "Unknown Publisher" for apps without a code signing certificate ($
 The game must be configured to write combat logs:
 
 1. Open **Throne and Liberty**
-2. Go to **Ring Menu - Turn on Detailed Combat Log**
+2. Go to **Settings → Shortcuts → Ring Menu Settings**
 3. Add **"Combat Meter"** to a Ring Menu slot
 4. In-game, open Ring Menu and **activate Combat Meter**
 5. Logs will appear in `%LOCALAPPDATA%\TL\Saved\CombatLogs`
@@ -82,19 +99,42 @@ The game must be configured to write combat logs:
 ### Basic Usage
 1. **Start the app** before playing
 2. **Enter combat** — stats appear automatically
-3. **Click Reset** before each boss/encounter for clean data
-4. **View tabs** — Skills, Crits, Heavy, Timeline, Targets
+3. **Click Reset** (or press `Ctrl+Tab`) before each encounter for clean data
+4. **View tabs** — Skills, Top Hits, Rotation, Timeline, Weapons
+
+### Understanding the Header Stats
+| Stat | Meaning |
+|------|---------|
+| **DPS** | Total damage ÷ duration (all time) |
+| **1-Min DPS** | First 60 seconds only — standard for comparisons |
+| **Normal** | Hits that were neither crit nor heavy |
+| **Crit Rate** | Adjusted % (excludes skills marked "cannot crit") |
+| **Heavy Rate** | Adjusted % (excludes skills marked "cannot heavy") |
+| **Crit+Heavy** | Hits that were BOTH crit AND heavy |
 
 ### Saving & Comparing Builds
 1. After an encounter, click **Save Encounter**
 2. Add a **build tag** (e.g., "GS/Dagger Crit Build")
 3. Go to **Saved** tab to view history
-4. Select two encounters → Click **Compare**
+4. Go to **Compare** tab → select 2-4 encounters
 5. See side-by-side stats for the **first 60 seconds** of each
 
+### Weapon Stats
+1. Go to **Skill Assign** tab
+2. **Drag skills** to their weapon category (Greatsword, Dagger, etc.)
+3. Use **Mastery** for weapon-neutral abilities (passives, buffs)
+4. Go to **Weapon Stats** tab to see damage breakdown by weapon
+5. Assignments persist across sessions
+
+### Skill Settings
+1. Go to **Skill Settings** tab
+2. Mark skills that **cannot crit** or **cannot heavy**
+3. Header rates will adjust to exclude these skills
+4. If a skill later crits/heavies, the setting auto-removes
+
 ### Party Mode
-1. Go to **Party** tab
-2. Enable **Party Broadcasting**
+1. Go to **Party DPS** tab
+2. Toggle **Party Broadcasting** ON
 3. **Login with Discord** (first time only)
 4. **Create** or **Join** a party with the 4-letter code
 5. Party leader clicks **Start/End Encounter**
@@ -106,7 +146,9 @@ The game must be configured to write combat logs:
 
 | Hotkey | Action |
 |--------|--------|
-| `Ctrl+Tab` | Reset encounter (configurable in Settings) |
+| `Ctrl+Tab` | Reset encounter (global, works in-game) |
+
+Configure in Settings. A beep confirms the reset.
 
 ---
 
@@ -118,7 +160,9 @@ Settings are stored in `config.json` next to the exe:
 {
   "log_path": "auto",
   "player_name": "",
+  "hotkey_enabled": true,
   "hotkey": "ctrl+tab",
+  "hotkey_sound": true,
   "party_enabled": false
 }
 ```
@@ -127,23 +171,51 @@ Settings are stored in `config.json` next to the exe:
 |---------|-------------|
 | `log_path` | Path to combat logs folder, or `"auto"` for default |
 | `player_name` | Filter to only show your damage (leave empty for all) |
-| `hotkey` | Reset hotkey combo |
+| `hotkey_enabled` | Enable/disable global hotkey |
+| `hotkey` | Reset hotkey combo (`ctrl+tab`, `ctrl+r`, `f9`-`f12`, etc.) |
+| `hotkey_sound` | Play beep on hotkey press |
 | `party_enabled` | Remember party broadcasting state |
+
+### Other Data Files
+| File | Purpose |
+|------|---------|
+| `encounters.json` | Saved encounter history |
+| `skill_settings.json` | Skills marked as cannot crit/heavy |
+| `weapon_config.json` | Skill-to-weapon assignments |
 
 ---
 
 ## 📋 Changelog
 
+### v0.19-beta *(Latest)*
+- **FIX:** Drag-and-drop skill assignment now works properly
+- **NEW:** Skill assignments persist to `weapon_config.json`
+- **IMPROVED:** Prevents UI re-rendering during drag operations
+
+### v0.18-beta
+- **NEW:** Weapon Stats tab — see damage breakdown by weapon
+- **NEW:** Skill Assign tab — drag-and-drop skills to weapons
+- **NEW:** Mastery category for weapon-neutral skills
+- **IMPROVED:** Visual weapon cards with damage percentages
+
+### v0.17-beta
+- **FIX:** Party Broadcasting now works properly with Discord OAuth
+- **FIX:** Token refresh and auto-reconnect
+- **IMPROVED:** Better status indicators for party connection
+
 ### v0.14-beta
-- **NEW:** Party broadcasting built into main app (no separate agent)
+- **NEW:** Party broadcasting built into main app
 - **NEW:** Discord OAuth for party authentication
-- **IMPROVED:** Auto-reconnect to party server
-- **FIX:** Various bug fixes and stability improvements
+- **NEW:** Load Encounter — view saved encounters in main UI
+- **NEW:** Piano-roll skill timeline visualization
+- **NEW:** Rotation analysis with gap detection
+- **NEW:** Compare up to 4 encounters (was 2)
+- **NEW:** Skill Settings for accurate crit/heavy rates
 
 ### v0.13-beta
-- **NEW:** Build comparison feature
-- **NEW:** First 60 seconds tracking for fair comparisons
-- **IMPROVED:** Skill breakdown UI
+- **NEW:** Guide modal with comprehensive documentation
+- **NEW:** Normal hits tracking in header
+- **IMPROVED:** Segment breakdown with color-coded bars
 
 ---
 
@@ -155,11 +227,20 @@ A: This tool only reads log files the game creates. It does not inject, modify, 
 **Q: Why no damage showing?**  
 A: Make sure Combat Meter is enabled in-game (Ring Menu). Logs only write after leaving combat.
 
+**Q: Why are my crit/heavy rates wrong?**  
+A: Some skills can't crit or heavy. Go to Skill Settings tab and mark them — the rates will adjust.
+
 **Q: Party mode not connecting?**  
 A: Disable and re-enable Party Broadcasting to refresh your Discord login.
 
+**Q: Drag-and-drop not working?**  
+A: Make sure you're on v0.19 or later. Earlier versions had a bug.
+
 **Q: Windows blocks the download?**  
 A: Click "Keep" or "More info" → "Run anyway". This is normal for unsigned apps.
+
+**Q: How do I reset my data?**  
+A: Delete `encounters.json`, `skill_settings.json`, and `weapon_config.json` next to the exe.
 
 ---
 
