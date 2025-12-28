@@ -2,7 +2,7 @@
 
 A real-time DPS meter for **Throne and Liberty** that parses combat logs and displays detailed analytics through a web-based dashboard.
 
-🌐 **[Visit Website](https://YOUR-SITE.netlify.app)** · 📥 **[Download Latest Release](https://github.com/mjb6967/CKdpsApp/releases/latest/download/TL-DPS-Meter.zip)**
+🌐 **[Visit Website]([(https://ckdps.netlify.app/)])** · 📥 **[Download Latest Release](https://github.com/mjb6967/CKdpsApp/releases/latest/download/TL-DPS-Meter.zip)**
 
 ---
 
@@ -131,7 +131,7 @@ A: Settings → Enter your character name in the Player Filter field.
 ## Support
 
 - **Issues & Bugs**: [GitHub Issues](https://github.com/mjb6967/CKdpsApp/issues)
-- **Website**: [YOUR-SITE.netlify.app](https://YOUR-SITE.netlify.app)
+- **Website**: [YOUR-SITE.netlify.app][(https://YOUR-SITE.netlify.app)](https://ckdps.netlify.app/)
 
 ---
 
