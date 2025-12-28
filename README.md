@@ -130,8 +130,8 @@ A: Settings → Enter your character name in the Player Filter field.
 
 ## Support
 
-- **Issues & Bugs**: [GitHub Issues](https://github.com/mjb6967/CKdpsApp/issues)
-- **Website**: [YOUR-SITE.netlify.app](https://ckdps.netlify.app/)
+- **Issues & Bugs**:(https://github.com/mjb6967/CKdpsApp/issues)
+- **Website**: (https://ckdps.netlify.app/)
 
 ---
 
